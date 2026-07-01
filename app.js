@@ -30,16 +30,28 @@ let editingPrizeId = null;
 // ==========================================
 // 1. LÓGICA DE INICIALIZACIÓN (Detectar pantalla)
 // ==========================================
-document.addEventListener('DOMContentLoaded', async () => {
-    // Asegurarnos de que el documento de la billetera exista
-    await setDoc(doc(db, "wallet", "lau"), { dummy: true }, { merge: true });
-
+function detectAndInit() {
+    console.log("Detecting page type...");
     if (document.getElementById('user-balance')) {
+        console.log("Initializing Lau App");
         initLauApp(); // Estamos en index.html
     } else if (document.getElementById('login-screen')) {
+        console.log("Initializing Admin App");
         initAdminApp(); // Estamos en admin.html
     }
-});
+}
+
+// Ejecutar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', async () => {
+        await setDoc(doc(db, "wallet", "lau"), { dummy: true }, { merge: true });
+        detectAndInit();
+    });
+} else {
+    // El DOM ya está cargado
+    setDoc(doc(db, "wallet", "lau"), { dummy: true }, { merge: true });
+    detectAndInit();
+}
 
 // ==========================================
 // 2. VISTA DE LAU (index.html)
@@ -237,6 +249,7 @@ function initAdminApp() {
 
     // Botones del admin - Actualizar Puntos
     const btnUpdatePoints = document.getElementById('btn-update-points');
+    console.log("btn-update-points found:", !!btnUpdatePoints);
     if (btnUpdatePoints) {
         btnUpdatePoints.addEventListener('click', async () => {
             const amountInput = document.getElementById('point-amount');
@@ -269,6 +282,7 @@ function initAdminApp() {
 
     // Botones del admin - Crear Premio
     const btnAddPrize = document.getElementById('btn-add-prize');
+    console.log("btn-add-prize found:", !!btnAddPrize);
     if (btnAddPrize) {
         btnAddPrize.addEventListener('click', async () => {
             const nameInput = document.getElementById('prize-name');
@@ -297,6 +311,7 @@ function initAdminApp() {
 
     // Botones del admin - Guardar Edición
     const btnSaveEdit = document.getElementById('btn-save-edit');
+    console.log("btn-save-edit found:", !!btnSaveEdit);
     if (btnSaveEdit) {
         btnSaveEdit.addEventListener('click', async () => {
             const newName = document.getElementById('edit-prize-name').value.trim();
