@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayLau - Admin 👑</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="login-screen" class="app-container">
+        <h2>Acceso Restringido 🛑</h2>
+        <input type="password" id="admin-pass" placeholder="Contraseña">
+        <button class="btn-primary" onclick="checkPassword()">Entrar</button>
+    </div>
+
+    <div id="admin-panel" class="app-container hidden">
+        <h1>Panel de Control</h1>
+        <p>Saldo actual de Lau: <strong id="admin-balance">...</strong> pts</p>
+
+        <div class="admin-card">
+            <h3>Sumar / Restar Puntos</h3>
+            <input type="number" id="point-amount" placeholder="Cantidad (ej: 50 o -20)">
+            <input type="text" id="point-reason" placeholder="Razón (ej: Me cocinó rico)">
+            <button class="btn-primary" id="btn-update-points">Actualizar Saldo</button>
+        </div>
+
+        <div class="admin-card">
+            <h3>Gestión de Premios</h3>
+            <input type="text" id="prize-name" placeholder="Nombre del premio (ej: Cine)">
+            <input type="number" id="prize-cost" placeholder="Costo en pts">
+            <button class="btn-primary" id="btn-add-prize">Crear Premio</button>
+            
+            <div id="admin-prizes-list" class="admin-list">
+                </div>
+        </div>
+    </div>
+
+    <script src="app.js" type="module"></script>
+</body>
+</html>

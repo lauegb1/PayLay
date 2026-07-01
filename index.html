@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayLau 🐮</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <audio id="ding-sound" src="https://www.myinstants.com/media/sounds/ding-sound-effect.mp3" preload="auto"></audio>
+    <div id="hearts-container"></div>
+
+    <div class="app-container">
+        <header class="header-section">
+            <div class="profile">
+                <div class="avatar">🐮</div>
+                <h1>PayLau</h1>
+                <p id="tini-title" class="title-badge hidden">✨ La nueva Tini ✨</p>
+            </div>
+            
+            <div class="balance-card">
+                <h2>Saldo Disponible</h2>
+                <div class="points"><span id="user-balance">1000</span> <span class="pts-text">pts</span></div>
+                <p class="streak-text">🔥 Racha: <span id="user-streak">0</span> semanas</p>
+            </div>
+
+            <div class="progress-section">
+                <p id="progress-text">Cargando próximo objetivo...</p>
+                <div class="progress-bar-bg">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" onclick="showTab('premios')">🎁 Premios</button>
+            <button class="tab-btn" onclick="showTab('historial')">📜 Historial</button>
+        </nav>
+
+        <section id="tab-premios" class="tab-content active">
+            <div class="prizes-grid" id="prizes-container">
+                </div>
+        </section>
+
+        <section id="tab-historial" class="tab-content">
+            <ul class="history-list" id="history-container">
+                </ul>
+        </section>
+    </div>
+
+    <script src="app.js" type="module"></script>
+</body>
+</html>
