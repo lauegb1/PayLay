@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { 
     getFirestore, doc, onSnapshot, collection, addDoc, 
-    deleteDoc, query, orderBy, serverTimestamp, setDoc, getDocs 
+    deleteDoc, query, orderBy, serverTimestamp, setDoc, getDocs, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 // Tu configuración de Firebase
@@ -25,6 +25,7 @@ const db = getFirestore(app);
 let currentBalance = 0;
 let totalSpent = 0;
 let allPrizes = [];
+let editingPrizeId = null;
 
 // ==========================================
 // 1. LÓGICA DE INICIALIZACIÓN (Detectar pantalla)
@@ -220,12 +221,13 @@ function initAdminApp() {
         snapshot.forEach(docSnap => {
             const prize = docSnap.data();
             const div = document.createElement('div');
-            div.style.display = "flex";
-            div.style.justifyContent = "space-between";
-            div.style.marginBottom = "10px";
+            div.className = 'admin-prize-item';
             div.innerHTML = `
                 <span>${prize.name} (${prize.cost} pts)</span>
-                <button onclick="deletePrize('${docSnap.id}')" style="background:red;color:white;border:none;padding:5px;border-radius:5px;cursor:pointer;">Borrar</button>
+                <div class="admin-prize-buttons">
+                    <button class="btn-edit" onclick="openEditModal('${docSnap.id}', '${prize.name}', ${prize.cost})">Editar</button>
+                    <button class="btn-delete" onclick="deletePrize('${docSnap.id}')">Borrar</button>
+                </div>
             `;
             list.appendChild(div);
         });
@@ -262,7 +264,36 @@ function initAdminApp() {
         document.getElementById('prize-name').value = '';
         document.getElementById('prize-cost').value = '';
     });
+
+    document.getElementById('btn-save-edit')?.addEventListener('click', async () => {
+        const newName = document.getElementById('edit-prize-name').value;
+        const newCost = parseInt(document.getElementById('edit-prize-cost').value);
+        if (!newName || !newCost) return alert("Completá nombre y costo");
+
+        await updateDoc(doc(db, "prizes", editingPrizeId), {
+            name: newName,
+            cost: newCost
+        });
+
+        closeEditModal();
+    });
 }
+
+// Función global para abrir modal de edición
+window.openEditModal = (id, name, cost) => {
+    editingPrizeId = id;
+    document.getElementById('edit-prize-name').value = name;
+    document.getElementById('edit-prize-cost').value = cost;
+    document.getElementById('edit-prize-modal').classList.remove('hidden');
+};
+
+// Función global para cerrar modal
+window.closeEditModal = () => {
+    editingPrizeId = null;
+    document.getElementById('edit-prize-modal').classList.add('hidden');
+    document.getElementById('edit-prize-name').value = '';
+    document.getElementById('edit-prize-cost').value = '';
+};
 
 // Función global para borrar premio
 window.deletePrize = async (id) => {
