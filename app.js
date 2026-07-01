@@ -204,6 +204,8 @@ window.checkPassword = () => {
 };
 
 function initAdminApp() {
+    console.log("Admin app initialized");
+    
     // Escuchar saldo
     onSnapshot(doc(db, "wallet", "lau"), (docSnap) => {
         const data = docSnap.data();
@@ -233,54 +235,98 @@ function initAdminApp() {
         });
     });
 
-    // Botones del admin
-    document.getElementById('btn-update-points')?.addEventListener('click', async () => {
-        const amount = parseInt(document.getElementById('point-amount').value);
-        const reason = document.getElementById('point-reason').value;
-        if (!amount || !reason) return alert("Completá monto y razón");
+    // Botones del admin - Actualizar Puntos
+    const btnUpdatePoints = document.getElementById('btn-update-points');
+    if (btnUpdatePoints) {
+        btnUpdatePoints.addEventListener('click', async () => {
+            const amountInput = document.getElementById('point-amount');
+            const reasonInput = document.getElementById('point-reason');
+            const amount = parseInt(amountInput.value);
+            const reason = reasonInput.value.trim();
+            
+            console.log("Update points clicked:", { amount, reason });
+            
+            if (!amount || !reason) {
+                alert("Completá monto y razón");
+                return;
+            }
 
-        const newBalance = currentBalance + amount;
-        await setDoc(doc(db, "wallet", "lau"), { balance: newBalance }, { merge: true });
-        
-        await addDoc(collection(db, "history"), {
-            reason: reason,
-            amount: Math.abs(amount),
-            type: amount > 0 ? 'positive' : 'negative',
-            date: serverTimestamp()
+            const newBalance = currentBalance + amount;
+            await setDoc(doc(db, "wallet", "lau"), { balance: newBalance }, { merge: true });
+            
+            await addDoc(collection(db, "history"), {
+                reason: reason,
+                amount: Math.abs(amount),
+                type: amount > 0 ? 'positive' : 'negative',
+                date: serverTimestamp()
+            });
+
+            amountInput.value = '';
+            reasonInput.value = '';
+            alert("Puntos actualizados!");
         });
+    }
 
-        document.getElementById('point-amount').value = '';
-        document.getElementById('point-reason').value = '';
-        alert("Puntos actualizados!");
-    });
+    // Botones del admin - Crear Premio
+    const btnAddPrize = document.getElementById('btn-add-prize');
+    if (btnAddPrize) {
+        btnAddPrize.addEventListener('click', async () => {
+            const nameInput = document.getElementById('prize-name');
+            const costInput = document.getElementById('prize-cost');
+            const name = nameInput.value.trim();
+            const cost = parseInt(costInput.value);
+            
+            console.log("Add prize clicked:", { name, cost });
+            
+            if (!name || !cost) {
+                alert("Completá nombre y costo");
+                return;
+            }
 
-    document.getElementById('btn-add-prize')?.addEventListener('click', async () => {
-        const name = document.getElementById('prize-name').value;
-        const cost = parseInt(document.getElementById('prize-cost').value);
-        if (!name || !cost) return alert("Completá nombre y costo");
-
-        await addDoc(collection(db, "prizes"), { name, cost });
-        
-        document.getElementById('prize-name').value = '';
-        document.getElementById('prize-cost').value = '';
-    });
-
-    document.getElementById('btn-save-edit')?.addEventListener('click', async () => {
-        const newName = document.getElementById('edit-prize-name').value;
-        const newCost = parseInt(document.getElementById('edit-prize-cost').value);
-        if (!newName || !newCost) return alert("Completá nombre y costo");
-
-        await updateDoc(doc(db, "prizes", editingPrizeId), {
-            name: newName,
-            cost: newCost
+            try {
+                await addDoc(collection(db, "prizes"), { name, cost });
+                nameInput.value = '';
+                costInput.value = '';
+                alert("Premio creado!");
+            } catch (error) {
+                console.error("Error adding prize:", error);
+                alert("Error al crear el premio: " + error.message);
+            }
         });
+    }
 
-        closeEditModal();
-    });
+    // Botones del admin - Guardar Edición
+    const btnSaveEdit = document.getElementById('btn-save-edit');
+    if (btnSaveEdit) {
+        btnSaveEdit.addEventListener('click', async () => {
+            const newName = document.getElementById('edit-prize-name').value.trim();
+            const newCost = parseInt(document.getElementById('edit-prize-cost').value);
+            
+            console.log("Save edit clicked:", { newName, newCost });
+            
+            if (!newName || !newCost) {
+                alert("Completá nombre y costo");
+                return;
+            }
+
+            try {
+                await updateDoc(doc(db, "prizes", editingPrizeId), {
+                    name: newName,
+                    cost: newCost
+                });
+                closeEditModal();
+                alert("Premio actualizado!");
+            } catch (error) {
+                console.error("Error updating prize:", error);
+                alert("Error al actualizar el premio: " + error.message);
+            }
+        });
+    }
 }
 
 // Función global para abrir modal de edición
 window.openEditModal = (id, name, cost) => {
+    console.log("Opening edit modal for:", { id, name, cost });
     editingPrizeId = id;
     document.getElementById('edit-prize-name').value = name;
     document.getElementById('edit-prize-cost').value = cost;
@@ -289,6 +335,7 @@ window.openEditModal = (id, name, cost) => {
 
 // Función global para cerrar modal
 window.closeEditModal = () => {
+    console.log("Closing edit modal");
     editingPrizeId = null;
     document.getElementById('edit-prize-modal').classList.add('hidden');
     document.getElementById('edit-prize-name').value = '';
@@ -298,6 +345,12 @@ window.closeEditModal = () => {
 // Función global para borrar premio
 window.deletePrize = async (id) => {
     if(confirm("¿Seguro que querés borrar este premio?")) {
-        await deleteDoc(doc(db, "prizes", id));
+        try {
+            await deleteDoc(doc(db, "prizes", id));
+            alert("Premio borrado!");
+        } catch (error) {
+            console.error("Error deleting prize:", error);
+            alert("Error al borrar el premio: " + error.message);
+        }
     }
 };
