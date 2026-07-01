@@ -33,6 +33,18 @@
             <div id="admin-prizes-list" class="admin-list">
                 </div>
         </div>
+
+        <div id="edit-prize-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Editar Premio</h3>
+                <input type="text" id="edit-prize-name" placeholder="Nombre del premio">
+                <input type="number" id="edit-prize-cost" placeholder="Costo en pts">
+                <div class="modal-buttons">
+                    <button class="btn-primary" id="btn-save-edit">Guardar</button>
+                    <button class="btn-cancel" onclick="closeEditModal()">Cancelar</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="app.js" type="module"></script>
